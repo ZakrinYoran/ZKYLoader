@@ -4,7 +4,7 @@ extends Node
 # Mods are loaded from lowest to highest priority, default is 0
 const MOD_PRIORITY = -INF
 # Name of the mod, used for writing to the logs
-const MOD_NAME = "TestLoader"
+const MOD_NAME = "ZKYLoader"
 # Directory we will search for mods
 const MOD_DIRECTORY = "mods/mods"
 # Path of the mod folder, automatically generated on runtime
