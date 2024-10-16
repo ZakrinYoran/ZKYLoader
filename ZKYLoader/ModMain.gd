@@ -101,18 +101,26 @@ func _initMods():
 				var packedScript = ResourceLoader.load(modGlobalPath)
 				initScripts.append(packedScript)
 
-	initScripts.sort_custom(self, "_compareScriptPriority")
+	if initScripts:
+		initScripts.sort_custom(self, "_compareScriptPriority")
+		var scriptPriorities := []
+		for script in initScripts:
+			scriptPriorities.append([script.resource_path.get_slice("/", 2), 
+			script.get_script_constant_map().get("MOD_PRIORITY", 0)])
+		l("Initializing by priority: %s" % str(scriptPriorities))
 
-	for packedScript in initScripts:
-	# Very cursed, unfortunately i cannot find a better way to do this
-		packedScript.source_code = packedScript.source_code.replace(
-		"\nvar modLoader = false", "\nvar modLoader = instance_from_id(%s)" % get_instance_id())
-		packedScript.reload()
+		for packedScript in initScripts:
+		# Very cursed, unfortunately i cannot find a better way to do this
+			packedScript.source_code = packedScript.source_code.replace(
+			"\nvar modLoader = false", "\nvar modLoader = instance_from_id(%s)" % get_instance_id())
+			packedScript.reload()
 
-		l("Running %s" % packedScript.resource_path)
-		var scriptInstance = packedScript.new(self)
-		add_child(scriptInstance)
-	l("Done initializing mods.")
+			l("Running %s" % packedScript.resource_path)
+			var scriptInstance = packedScript.new(self)
+			add_child(scriptInstance)
+		l("Done initializing mods.")
+	else:
+		l("No mods to initialize :(")
 
 func _compareScriptPriority(a:Script, b:Script):
 	var aPrio = a.get_script_constant_map().get("MOD_PRIORITY", 0)
